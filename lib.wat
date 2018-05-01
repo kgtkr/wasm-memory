@@ -1,9 +1,10 @@
 (module
   (memory 1)
   ;;メモリレイアウト
-  ;;フラグ(i32)(0:これ以降無効,1:未使用,2:使用中),サイズ(i32),データ領域
+  ;;フラグ(i32)(0:これ以降無効,1:未使用,2:使用中),サイズ(i32),前のポインタ(i32),データ領域
   (func $malloc (param $size i32) (result i32)
     (local $i i32)
+    (local $prev i32)
     (local $c_flag i32)
     (local $c_size i32)
     ;;フラグが0でなければループ
@@ -23,24 +24,33 @@
             (return (get_local $i))
           end
 
-          ;;求めるサイズ+8以上
-          (i32.ge_s (get_local $c_size) (i32.add (get_local $size) (i32.const 8)))
+          ;;求めるサイズ+12以上
+          (i32.ge_s (get_local $c_size) (i32.add (get_local $size) (i32.const 12)))
           if
             ;;==使用部分==
             ;;未使用→使用中
             (i32.store (get_local $i) (i32.const 2))
             ;;サイズ
             (i32.store (i32.add (get_local $i) (i32.const 4)) (get_local $size))
+            ;;前のポインタ
+            (i32.store (i32.add (get_local $i) (i32.const 8)) (get_local $prev))
 
             ;;==余り==
             ;;未使用
             (i32.store (i32.add (i32.add (get_local $i) (get_local $size)) (i32.const 8)) (i32.const 1))
             ;;サイズ
             (i32.store (i32.add (i32.add (get_local $i) (get_local $size)) (i32.const 12)) (i32.sub (get_local $c_size) (get_local $size)))
-          
+            ;;前のポインタ
+            (i32.store (i32.add (i32.add (get_local $i) (get_local $size)) (i32.const 16)) (get_local $i))
+
+            ;;==次==
+            ;;前のポインタ
+            (i32.store (i32.add (i32.add (get_local $i) (get_local $c_size)) (i32.const 20)) (i32.add (i32.add (get_local $i) (get_local $size)) (i32.const 8)))
+
             (return (get_local $i))
           end
         end
+        (set_local $prev (get_local $i))
         (set_local $i (i32.add (get_local $i) (i32.add (get_local $c_size) (i32.const 8))))
         br $loop
       end
@@ -51,6 +61,8 @@
     (i32.store (get_local $i) (i32.const 2))
     ;;サイズ
     (i32.store (i32.add (get_local $i) (i32.const 4)) (get_local $size))
+    ;;前のポインタ
+    (i32.store (i32.add (get_local $i) (i32.const 8)) (get_local $prev))
 
     (return (get_local $i))
   )

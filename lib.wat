@@ -96,5 +96,26 @@
   )
 
   (func $free (param $p i32)
+    (local $size i32)
+    (local $prev i32)
+
+    (set_local $size (call $get_size (get_local $p)))
+    (set_local $prev (call $get_prev (get_local $p)))
+
+    ;;先頭ポインタでないかつ前が空いているか
+    (i32.and (i32.ne (get_local $p) (i32.const 0)) (i32.eq (call $get_flag (get_local $prev)) (i32.const 1)))
+    if
+      (set_local $p (get_local $prev))
+      (set_local $prev (call $get_prev (get_local $p)))
+      (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (get_local $p)) (i32.const 12))))
+    end
+
+    ;;次が空いているか
+    (i32.eq (call $get_flag (call $get_next (get_local $p))) (i32.const 1))
+    if
+      (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (call $get_next (get_local $p))) (i32.const 12))))
+    end
+
+    (call $set_block (get_local $p) (i32.const 1) (get_local $size) (get_local $prev))
   )
 )

@@ -138,6 +138,7 @@
     (if (i32.eq (call $get_flag (call $get_next (get_local $p))) (get_global $FLAG_NON_USE))
       (then
         (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (call $get_next (get_local $p))) (get_global $HEAD_SIZE))))
+        (call $set_prev (call $get_next(call $get_next (get_local $p))) (get_local $p))
       )
     )
 

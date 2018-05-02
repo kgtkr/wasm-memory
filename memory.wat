@@ -129,6 +129,7 @@
             (set_local $p (get_local $prev))
             (set_local $prev (call $get_prev (get_local $p)))
             (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (get_local $p)) (get_global $HEAD_SIZE))))
+            (call $set_prev (call $get_next(call $get_next (get_local $p))) (get_local $p))
           )
         )
       )

@@ -107,5 +107,32 @@ describe("memory", () => {
 
     memSim.setInt32(36, 2, true);
     expect(memory.buffer).abEq(memSimBuf);
+
+    //(20)/5/12
+    expect(wasm.exports.malloc(12)).toBe(45);
+    memSim.setInt8(45, 2, true);
+    memSim.setInt32(46, 12, true);
+    memSim.setInt32(50, 31, true);
+    expect(memory.buffer).abEq(memSimBuf);
+
+    //(20)/5
+    wasm.exports.free(45);
+    memSim.setInt8(45, 0, true);
+    expect(memory.buffer).abEq(memSimBuf);
+
+    //(20)/5/12
+    expect(wasm.exports.malloc(12)).toBe(45);
+    memSim.setInt8(45, 2, true);
+    memSim.setInt32(46, 12, true);
+    memSim.setInt32(50, 31, true);
+    expect(memory.buffer).abEq(memSimBuf);
+
+    //(34)/12
+    wasm.exports.free(31);
+    memSim.setInt32(3, 34, true);
+    memSim.setInt32(7, -1, true);
+
+    memSim.setInt32(50, 2, true);
+    expect(memory.buffer).abEq(memSimBuf);
   });
 });

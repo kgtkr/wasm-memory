@@ -1,6 +1,7 @@
 (module
   (import "resource" "memory" (memory 1))
   (import "config" "start" (global $START i32))
+  (global $INVALID i32 (i32.const -1))
   (global $HEAD_SIZE i32 (i32.const 9))
   (global $FLAG_INVALID i32 (i32.const 0))
   (global $FLAG_NON_USE i32 (i32.const 1))
@@ -64,6 +65,7 @@
     (local $old_size i32)
 
     (set_local $i (get_global $START))
+    (set_local $prev (get_global $INVALID))
 
     ;;無効でなければループ
     loop $loop

@@ -114,32 +114,49 @@
     (return (get_local $i))
   )
 
-  (func $free (export "free") (param $p i32)
+  (func $join_prev (param $p i32) (result i32)
     (local $size i32)
     (local $prev i32)
+    (local $next i32)
 
-    (set_local $size (call $get_size (get_local $p)))
     (set_local $prev (call $get_prev (get_local $p)))
+    (set_local $next (call $get_next (get_local $p)))
+    (set_local $size (i32.add (call $get_size (call $get_prev (get_local $p))) (i32.add (call $get_size (get_local $p)) (get_global $HEAD_SIZE))))
 
-    ;;先頭ポインタでないかつ前が空いているか
+    (call $set_size (get_local $prev) (get_local $size))
+    (call $set_prev (get_local $next) (get_local $prev))
+
+    (get_local $prev)
+  )
+
+  (func $join_next (param $p i32)
+    (local $size i32)
+    (local $next i32)
+    (local $next_next i32)
+
+    (set_local $size (i32.add (call $get_size (call $get_next (get_local $p))) (i32.add (call $get_size (get_local $p)) (get_global $HEAD_SIZE))))
+    (set_local $next_next (call $get_next (call $get_next (get_local $p))))
+
+    (call $set_size (get_local $p) (get_local $size))
+    (call $set_prev (get_local $next_next) (get_local $p))
+  )
+
+  (func $free (export "free") (param $p i32)
+    ;;先頭ポインタでないかつ前が空いているならjoin
     (if (i32.ne (get_local $p) (get_global $START))
       (then
-        (if (i32.eq (call $get_flag (get_local $prev)) (get_global $FLAG_NON_USE))
+        (if (i32.eq (call $get_flag (call $get_prev (get_local $p))) (get_global $FLAG_NON_USE))
           (then
-            (set_local $p (get_local $prev))
-            (set_local $prev (call $get_prev (get_local $p)))
-            (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (get_local $p)) (get_global $HEAD_SIZE))))
-            (call $set_prev (call $get_next(call $get_next (get_local $p))) (get_local $p))
+            (set_local $p (call $join_prev (get_local $p)))
           )
         )
       )
     )
 
-    ;;次が空いているか
+    ;;後ろが空いているならjoin
     (if (i32.eq (call $get_flag (call $get_next (get_local $p))) (get_global $FLAG_NON_USE))
       (then
-        (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (call $get_next (get_local $p))) (get_global $HEAD_SIZE))))
-        (call $set_prev (call $get_next(call $get_next (get_local $p))) (get_local $p))
+        (call $join_next (get_local $p))
       )
     )
 
@@ -149,7 +166,7 @@
         (call $set_flag (get_local $p) (get_global $FLAG_INVALID))
       )
       (else
-        (call $set_block (get_local $p) (get_global $FLAG_NON_USE) (get_local $size) (get_local $prev))
+        (call $set_flag (get_local $p) (get_global $FLAG_NON_USE))
       )
     )
   )

@@ -6,7 +6,7 @@
   (global $FLAG_NON_USE i32 (i32.const 1))
   (global $FLAG_USE i32 (i32.const 2))
 
-  (func $get_data_p (export "get_data_p") (param $p i32) (result i32)
+  (func $get_data_pointer (export "get_data_pointer") (param $p i32) (result i32)
     (i32.add (get_local $p) (get_global $HEAD_SIZE))
   )
 

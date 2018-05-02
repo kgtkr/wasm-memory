@@ -2,12 +2,18 @@ const child_process = require('child_process');
 const fs = require("fs");
 
 describe("memory", () => {
-  it("test", () => {
+  var mod;
+  var memory;
+  var wasm;
+  beforeAll(() => {
     child_process.execSync("wat2wasm memory.wat");
     const buf = fs.readFileSync("memory.wasm");
-    const memory = new WebAssembly.Memory({ initial: 1 })
-    const mod = new WebAssembly.Module(buf);
-    const inst = new WebAssembly.Instance(mod, {
+    mod = new WebAssembly.Module(buf);
+  });
+
+  beforeEach(() => {
+    memory = new WebAssembly.Memory({ initial: 1 })
+    wasm = new WebAssembly.Instance(mod, {
       config: {
         start: 0
       },
@@ -15,5 +21,9 @@ describe("memory", () => {
         memory: memory
       }
     });
+  });
+
+  it("malloc", () => {
+
   });
 });

@@ -1,5 +1,9 @@
 (module
   (import "imports" "memory" (memory 1))
+  (func $get_data_p (export "get_data_p") (param $p i32) (result i32)
+    (i32.add (get_local $p) (i32.const 12))
+  )
+
   (func $get_flag_p (param $p i32) (result i32)
     get_local $p
   )

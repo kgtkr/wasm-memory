@@ -54,39 +54,43 @@
     (local $old_size i32)
     ;;フラグが0でなければループ
     loop $loop
-      (i32.ne (call $get_flag (get_local $i)) (i32.const 0))
-      if
-        ;;未使用
-        (i32.eq (call $get_flag (get_local $i)) (i32.const 1))
-        if
-          ;;サイズと等しい
-          (i32.eq (call $get_size (get_local $i)) (get_local $size))
-          if
-            ;;未使用→使用中
-            (call $set_flag (get_local $i) (i32.const 2))
-            (return (get_local $i))
-          end
+      (if (i32.ne (call $get_flag (get_local $i)) (i32.const 0))
+        (then
+          ;;未使用
+          (if (i32.eq (call $get_flag (get_local $i)) (i32.const 1))
+            (then
+              ;;サイズと等しい
+              (if (i32.eq (call $get_size (get_local $i)) (get_local $size))
+                (then
+                  ;;未使用→使用中
+                  (call $set_flag (get_local $i) (i32.const 2))
+                  (return (get_local $i))
+                )
+              )
 
-          ;;要求サイズ+12以上
-          (set_local $old_size (call $get_size (get_local $i)))
-          (i32.ge_s (get_local $old_size) (i32.add (get_local $size) (i32.const 12)))
-          if
-            ;;==使用部分==
-            (call $set_block (get_local $i) (i32.const 2) (get_local $size) (get_local $prev))
-            
-            ;;==余り==
-            (call $set_block (call $get_next (get_local $i)) (i32.const 1) (i32.sub (get_local $old_size) (i32.add (get_local $size) (i32.const 12))) (get_local $i))
-            
-            ;;==次==
-            (call $set_prev (call $get_prev_p (call $get_next (call $get_next (get_local $i)))) (call $get_next (get_local $i)))
+              ;;要求サイズ+12以上
+              (set_local $old_size (call $get_size (get_local $i)))
+              (if (i32.ge_s (get_local $old_size) (i32.add (get_local $size) (i32.const 12)))
+                (then
+                  ;;==使用部分==
+                  (call $set_block (get_local $i) (i32.const 2) (get_local $size) (get_local $prev))
+                  
+                  ;;==余り==
+                  (call $set_block (call $get_next (get_local $i)) (i32.const 1) (i32.sub (get_local $old_size) (i32.add (get_local $size) (i32.const 12))) (get_local $i))
+                  
+                  ;;==次==
+                  (call $set_prev (call $get_prev_p (call $get_next (call $get_next (get_local $i)))) (call $get_next (get_local $i)))
 
-            (return (get_local $i))
-          end
-        end
-        (set_local $prev (get_local $i))
-        (set_local $i (call $get_next (get_local $i)))
-        br $loop
-      end
+                  (return (get_local $i))
+                )
+              )
+            )
+          )
+          (set_local $prev (get_local $i))
+          (set_local $i (call $get_next (get_local $i)))
+          br $loop
+        )
+      )
     end
 
     ;;ラストに追加
@@ -103,18 +107,20 @@
     (set_local $prev (call $get_prev (get_local $p)))
 
     ;;先頭ポインタでないかつ前が空いているか
-    (i32.and (i32.ne (get_local $p) (i32.const 0)) (i32.eq (call $get_flag (get_local $prev)) (i32.const 1)))
-    if
-      (set_local $p (get_local $prev))
-      (set_local $prev (call $get_prev (get_local $p)))
-      (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (get_local $p)) (i32.const 12))))
-    end
+    (if (i32.and (i32.ne (get_local $p) (i32.const 0)) (i32.eq (call $get_flag (get_local $prev)) (i32.const 1)))
+      (then
+        (set_local $p (get_local $prev))
+        (set_local $prev (call $get_prev (get_local $p)))
+        (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (get_local $p)) (i32.const 12))))
+      )
+    )
 
     ;;次が空いているか
-    (i32.eq (call $get_flag (call $get_next (get_local $p))) (i32.const 1))
-    if
-      (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (call $get_next (get_local $p))) (i32.const 12))))
-    end
+    (if (i32.eq (call $get_flag (call $get_next (get_local $p))) (i32.const 1))
+      (then
+        (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (call $get_next (get_local $p))) (i32.const 12))))
+      )
+    )
 
     (call $set_block (get_local $p) (i32.const 1) (get_local $size) (get_local $prev))
   )

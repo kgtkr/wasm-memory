@@ -1,5 +1,5 @@
 (module
-  (memory 1)
+  (import "imports" "memory" (memory 1))
   (func $get_flag_p (param $p i32) (result i32)
     get_local $p
   )

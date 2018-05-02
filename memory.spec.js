@@ -26,6 +26,6 @@ describe("memory", () => {
   it("正常に動作するか", () => {
     const memSimBuf = memory.buffer.slice(0);
     const memSim = new DataView(memSimBuf);
-    expect(memory.buffer, memSimBuf);
+    expect(memory.buffer).toEqual(memSimBuf);
   });
 });

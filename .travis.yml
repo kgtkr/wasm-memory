@@ -6,4 +6,4 @@ before_install:
  - cd wabt
  - make
 script:
-  - echo
+  - npm test

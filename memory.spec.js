@@ -57,10 +57,47 @@ describe("memory", () => {
     const memSimBuf = memory.buffer.slice(0);
     const memSim = new DataView(memSimBuf);
 
+    //20
     expect(wasm.exports.malloc(20)).toBe(2);
     memSim.setInt8(2, 2, true);
     memSim.setInt32(3, 20, true);
     memSim.setInt32(7, -1, true);
+    expect(memory.buffer).abEq(memSimBuf);
+
+    //20/5
+    expect(wasm.exports.malloc(5)).toBe(31);
+    memSim.setInt8(31, 2, true);
+    memSim.setInt32(32, 5, true);
+    memSim.setInt32(36, 2, true);
+    expect(memory.buffer).abEq(memSimBuf);
+
+    //(20)/5
+    wasm.exports.free(2);
+    memSim.setInt8(2, 1, true);
+    expect(memory.buffer).abEq(memSimBuf);
+
+    //20/5
+    expect(wasm.exports.malloc(20)).toBe(2);
+    memSim.setInt8(2, 2, true);
+    expect(memory.buffer).abEq(memSimBuf);
+
+    //(20)/5
+    wasm.exports.free(2);
+    memSim.setInt8(2, 1, true);
+    expect(memory.buffer).abEq(memSimBuf);
+
+    //11/(0)/5
+    //2-22-31
+    expect(wasm.exports.malloc(11)).toBe(2);
+    memSim.setInt8(2, 2, true);
+    memSim.setInt32(3, 11, true);
+    memSim.setInt32(7, -1, true);
+
+    memSim.setInt8(22, 1, true);
+    memSim.setInt32(23, 0, true);
+    memSim.setInt32(27, 2, true);
+
+    memSim.setInt32(36, 22, true);
     expect(memory.buffer).abEq(memSimBuf);
   });
 });

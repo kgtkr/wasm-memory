@@ -94,7 +94,7 @@
                   (call $set_block (call $get_next (get_local $i)) (get_global $FLAG_NON_USE) (i32.sub (get_local $old_size) (i32.add (get_local $size) (get_global $HEAD_SIZE))) (get_local $i))
                   
                   ;;==次==
-                  (call $set_prev (call $get_prev_p (call $get_next (call $get_next (get_local $i)))) (call $get_next (get_local $i)))
+                  (call $set_prev (call $get_next (call $get_next (get_local $i))) (call $get_next (get_local $i)))
 
                   (return (get_local $i))
                 )
@@ -122,11 +122,15 @@
     (set_local $prev (call $get_prev (get_local $p)))
 
     ;;先頭ポインタでないかつ前が空いているか
-    (if (i32.and (i32.ne (get_local $p) (get_global $START)) (i32.eq (call $get_flag (get_local $prev)) (get_global $FLAG_NON_USE)))
+    (if (i32.ne (get_local $p) (get_global $START))
       (then
-        (set_local $p (get_local $prev))
-        (set_local $prev (call $get_prev (get_local $p)))
-        (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (get_local $p)) (get_global $HEAD_SIZE))))
+        (if (i32.eq (call $get_flag (get_local $prev)) (get_global $FLAG_NON_USE))
+          (then
+            (set_local $p (get_local $prev))
+            (set_local $prev (call $get_prev (get_local $p)))
+            (set_local $size (i32.add (get_local $size) (i32.add (call $get_size (get_local $p)) (get_global $HEAD_SIZE))))
+          )
+        )
       )
     )
 

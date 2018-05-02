@@ -48,7 +48,7 @@
 
   ;;メモリレイアウト
   ;;フラグ(i32)(0:これ以降無効,1:未使用,2:使用中),サイズ(i32),前のポインタ(i32),データ領域
-  (func $malloc (param $size i32) (result i32)
+  (func $malloc (export "malloc") (param $size i32) (result i32)
     (local $i i32)
     (local $prev i32)
     (local $old_size i32)
@@ -99,7 +99,7 @@
     (return (get_local $i))
   )
 
-  (func $free (param $p i32)
+  (func $free (export "free") (param $p i32)
     (local $size i32)
     (local $prev i32)
 

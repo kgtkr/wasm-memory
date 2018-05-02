@@ -1,6 +1,6 @@
 (module
-  (import "imports" "memory" (memory 1))
-  (global $START i32 (i32.const 0))
+  (import "resource" "memory" (memory 1))
+  (import "config" "start" (global $START i32))
   (global $HEAD_SIZE i32 (i32.const 9))
   (global $FLAG_INVALID i32 (i32.const 0))
   (global $FLAG_NON_USE i32 (i32.const 1))

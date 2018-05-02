@@ -58,36 +58,36 @@ describe("memory", () => {
     const memSim = new DataView(memSimBuf);
 
     //20
-    expect(wasm.exports.malloc(20)).toBe(2);
+    expect(wasm.exports.malloc(20)).toBe(11);
     memSim.setInt8(2, 2, true);
     memSim.setInt32(3, 20, true);
     memSim.setInt32(7, -1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //20/5
-    expect(wasm.exports.malloc(5)).toBe(31);
+    expect(wasm.exports.malloc(5)).toBe(40);
     memSim.setInt8(31, 2, true);
     memSim.setInt32(32, 5, true);
     memSim.setInt32(36, 2, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //(20)/5
-    wasm.exports.free(2);
+    wasm.exports.free(11);
     memSim.setInt8(2, 1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //20/5
-    expect(wasm.exports.malloc(20)).toBe(2);
+    expect(wasm.exports.malloc(20)).toBe(11);
     memSim.setInt8(2, 2, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //(20)/5
-    wasm.exports.free(2);
+    wasm.exports.free(11);
     memSim.setInt8(2, 1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //11/(0)/5
-    expect(wasm.exports.malloc(11)).toBe(2);
+    expect(wasm.exports.malloc(11)).toBe(11);
     memSim.setInt8(2, 2, true);
     memSim.setInt32(3, 11, true);
     memSim.setInt32(7, -1, true);
@@ -100,7 +100,7 @@ describe("memory", () => {
     expect(memory.buffer).abEq(memSimBuf);
 
     //(20)/5
-    wasm.exports.free(2);
+    wasm.exports.free(11);
     memSim.setInt8(2, 1, true);
     memSim.setInt32(3, 20, true);
     memSim.setInt32(7, -1, true);
@@ -109,26 +109,26 @@ describe("memory", () => {
     expect(memory.buffer).abEq(memSimBuf);
 
     //(20)/5/12
-    expect(wasm.exports.malloc(12)).toBe(45);
+    expect(wasm.exports.malloc(12)).toBe(54);
     memSim.setInt8(45, 2, true);
     memSim.setInt32(46, 12, true);
     memSim.setInt32(50, 31, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //(20)/5
-    wasm.exports.free(45);
+    wasm.exports.free(54);
     memSim.setInt8(45, 0, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //(20)/5/12
-    expect(wasm.exports.malloc(12)).toBe(45);
+    expect(wasm.exports.malloc(12)).toBe(54);
     memSim.setInt8(45, 2, true);
     memSim.setInt32(46, 12, true);
     memSim.setInt32(50, 31, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //(34)/12
-    wasm.exports.free(31);
+    wasm.exports.free(40);
     memSim.setInt32(3, 34, true);
     memSim.setInt32(7, -1, true);
 
@@ -136,7 +136,7 @@ describe("memory", () => {
     expect(memory.buffer).abEq(memSimBuf);
 
     //(なし)
-    wasm.exports.free(45);
+    wasm.exports.free(54);
     memSim.setInt8(2, 0, true);
     memSim.setInt32(3, 55, true);
     expect(memory.buffer).abEq(memSimBuf);

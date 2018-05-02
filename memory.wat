@@ -7,10 +7,6 @@
   (global $FLAG_NON_USE i32 (i32.const 1))
   (global $FLAG_USE i32 (i32.const 2))
 
-  (func $get_data_pointer (export "get_data_pointer") (param $p i32) (result i32)
-    (i32.add (get_local $p) (get_global $HEAD_SIZE))
-  )
-
   (func $get_flag_p (param $p i32) (result i32)
     get_local $p
   )
@@ -59,7 +55,7 @@
 
   ;;メモリレイアウト
   ;;フラグ(i8)(0:これ以降無効,1:未使用,2:使用中),サイズ(i32),前のポインタ(i32),データ領域
-  (func $malloc (export "malloc") (param $size i32) (result i32)
+  (func $malloc (param $size i32) (result i32)
     (local $i i32)
     (local $prev i32)
     (local $old_size i32)
@@ -114,6 +110,10 @@
     (return (get_local $i))
   )
 
+  (func (export "malloc") (param $size i32) (result i32)
+    (i32.add (call $malloc (get_local $size)) (get_global $HEAD_SIZE))
+  )
+
   (func $join_prev (param $p i32) (result i32)
     (local $size i32)
     (local $prev i32)
@@ -148,7 +148,7 @@
     )
   )
 
-  (func $free (export "free") (param $p i32)
+  (func $free (param $p i32)
     ;;先頭ポインタでないかつ前が空いているならjoin
     (if (i32.ne (get_local $p) (get_global $START))
       (then
@@ -176,5 +176,9 @@
         (call $set_flag (get_local $p) (get_global $FLAG_NON_USE))
       )
     )
+  )
+
+  (func (export "free") (param $p i32)
+    (call $free (i32.sub (get_local $p) (get_global $HEAD_SIZE)))
   )
 )

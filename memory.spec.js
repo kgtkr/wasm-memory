@@ -12,10 +12,10 @@ describe("memory", () => {
   });
 
   beforeEach(() => {
-    memory = new WebAssembly.Memory({ initial: 1 })
+    memory = new WebAssembly.Memory({ initial: 1 });
     wasm = new WebAssembly.Instance(mod, {
       config: {
-        start: 0
+        start: 2
       },
       resource: {
         memory: memory
@@ -23,7 +23,9 @@ describe("memory", () => {
     });
   });
 
-  it("malloc", () => {
-
+  it("正常に動作するか", () => {
+    const memSimBuf=memory.buffer.clone();
+    const memSim=new DataView(memSimBuf);
+    expect(memory.buffer,memSimBuf);
   });
 });

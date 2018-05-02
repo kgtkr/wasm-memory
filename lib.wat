@@ -63,7 +63,7 @@
     (local $prev i32)
     (local $old_size i32)
 
-    (set_local $i $START)
+    (set_local $i (get_global $START))
 
     ;;無効でなければループ
     loop $loop
@@ -135,6 +135,14 @@
       )
     )
 
-    (call $set_block (get_local $p) (get_global $FLAG_NON_USE) (get_local $size) (get_local $prev))
+    (if (i32.eq (call $get_flag (call $get_next (get_local $p))) (get_global $FLAG_INVALID))
+      ;;次が無効
+      (then
+        (call $set_flag (get_local $p) (get_global $FLAG_INVALID))
+      )
+      (else
+        (call $set_block (get_local $p) (get_global $FLAG_NON_USE) (get_local $size) (get_local $prev))
+      )
+    )
   )
 )

@@ -62,6 +62,9 @@
     (local $i i32)
     (local $prev i32)
     (local $old_size i32)
+
+    (set_local $i $START)
+
     ;;無効でなければループ
     loop $loop
       (if (i32.ne (call $get_flag (get_local $i)) (get_global $FLAG_INVALID))

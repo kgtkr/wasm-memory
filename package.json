@@ -1,0 +1,21 @@
+{
+  "name": "wasm-runtime",
+  "version": "1.0.0",
+  "description": "[![Build Status](https://travis-ci.org/kgtkr/wasm-runtime.svg?branch=master)](https://travis-ci.org/kgtkr/wasm-runtime)",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kgtkr/wasm-runtime.git"
+  },
+  "author": "kgtkr",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/kgtkr/wasm-runtime/issues"
+  },
+  "homepage": "https://github.com/kgtkr/wasm-runtime#readme",
+  "devDependencies": {
+    "jest": "^22.4.3"
+  }
+}

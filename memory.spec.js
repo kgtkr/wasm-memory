@@ -26,7 +26,11 @@ describe("memory", () => {
   it("正常に動作するか", () => {
     const memSimBuf = memory.buffer.slice(0);
     const memSim = new DataView(memSimBuf);
-    wasm.exports.malloc(20);
+
+    expect(wasm.exports.malloc(20)).toBe(2);
+    memSim.setInt8(2, 2);
+    memSim.setInt32(3, 20);
+    memSim.setInt32(7, -1);
     expect(memory.buffer).toEqual(memSimBuf);
   });
 });

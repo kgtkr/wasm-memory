@@ -124,21 +124,28 @@
     (set_local $size (i32.add (call $get_size (call $get_prev (get_local $p))) (i32.add (call $get_size (get_local $p)) (get_global $HEAD_SIZE))))
 
     (call $set_size (get_local $prev) (get_local $size))
-    (call $set_prev (get_local $next) (get_local $prev))
+    (if (i32.ne (call $get_flag (get_local $next)) (get_global $FLAG_INVALID))
+      (then
+        (call $set_prev (get_local $next) (get_local $prev))
+      )
+    )
 
     (get_local $prev)
   )
 
   (func $join_next (param $p i32)
     (local $size i32)
-    (local $next i32)
     (local $next_next i32)
 
     (set_local $size (i32.add (call $get_size (call $get_next (get_local $p))) (i32.add (call $get_size (get_local $p)) (get_global $HEAD_SIZE))))
     (set_local $next_next (call $get_next (call $get_next (get_local $p))))
 
     (call $set_size (get_local $p) (get_local $size))
-    (call $set_prev (get_local $next_next) (get_local $p))
+    (if (i32.ne (call $get_flag (get_local $next_next)) (get_global $FLAG_INVALID))
+      (then
+        (call $set_prev (get_local $next_next) (get_local $p))
+      )
+    )
   )
 
   (func $free (export "free") (param $p i32)

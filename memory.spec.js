@@ -134,5 +134,11 @@ describe("memory", () => {
 
     memSim.setInt32(50, 2, true);
     expect(memory.buffer).abEq(memSimBuf);
+
+    //(なし)
+    wasm.exports.free(45);
+    memSim.setInt8(2, 0, true);
+    memSim.setInt32(3, 55, true);
+    expect(memory.buffer).abEq(memSimBuf);
   });
 });

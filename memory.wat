@@ -8,7 +8,7 @@
   (global $FLAG_USE i32 (i32.const 2))
 
   (func $get_flag_p (param $p i32) (result i32)
-    get_local $p
+    (i32.sub (get_local $p) (i32.const 9))
   )
 
   (func $get_flag (param $p i32) (result i32)
@@ -20,7 +20,7 @@
   )
 
   (func $get_size_p (param $p i32) (result i32)
-    (i32.add (get_local $p) (i32.const 1))
+    (i32.sub (get_local $p) (i32.const 8))
   )
 
   (func $get_size (param $p i32) (result i32)
@@ -32,7 +32,7 @@
   )
 
   (func $get_prev_p (param $p i32) (result i32)
-    (i32.add (get_local $p) (i32.const 5))
+    (i32.sub (get_local $p) (i32.const 4))
   )
 
   (func $get_prev (param $p i32) (result i32)
@@ -50,17 +50,17 @@
   )
 
   (func $get_next (param $p i32) (result i32)
-    (i32.add (i32.add (get_local $p) (get_global $HEAD_SIZE)) (call $get_size (get_local $p)))
+    (i32.add (i32.add (get_local $p) (call $get_size (get_local $p))) (get_global $HEAD_SIZE))
   )
 
   ;;メモリレイアウト
   ;;フラグ(i8)(0:これ以降無効,1:未使用,2:使用中),サイズ(i32),前のポインタ(i32),データ領域
-  (func $malloc (param $size i32) (result i32)
+  (func $malloc (export "malloc") (param $size i32) (result i32)
     (local $i i32)
     (local $prev i32)
     (local $old_size i32)
 
-    (set_local $i (get_global $START))
+    (set_local $i (i32.add (get_global $START) (get_global $HEAD_SIZE)))
     (set_local $prev (get_global $INVALID))
 
     ;;無効でなければループ
@@ -110,10 +110,6 @@
     (return (get_local $i))
   )
 
-  (func (export "malloc") (param $size i32) (result i32)
-    (i32.add (call $malloc (get_local $size)) (get_global $HEAD_SIZE))
-  )
-
   (func $join_prev (param $p i32) (result i32)
     (local $size i32)
     (local $prev i32)
@@ -148,9 +144,9 @@
     )
   )
 
-  (func $free (param $p i32)
+  (func $free (export "free") (param $p i32)
     ;;先頭ポインタでないかつ前が空いているならjoin
-    (if (i32.ne (get_local $p) (get_global $START))
+    (if (i32.ne (get_local $p) (i32.add (get_global $START) (get_global $HEAD_SIZE)))
       (then
         (if (i32.eq (call $get_flag (call $get_prev (get_local $p))) (get_global $FLAG_NON_USE))
           (then
@@ -176,9 +172,5 @@
         (call $set_flag (get_local $p) (get_global $FLAG_NON_USE))
       )
     )
-  )
-
-  (func (export "free") (param $p i32)
-    (call $free (i32.sub (get_local $p) (get_global $HEAD_SIZE)))
   )
 )

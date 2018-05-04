@@ -3,9 +3,9 @@
   (import "config" "start" (global $START i32))
   (global $INVALID i32 (i32.const -1))
   (global $HEAD_SIZE i32 (i32.const 9))
-  (global $FLAG_INVALID i32 (i32.const 0))
-  (global $FLAG_NON_USE i32 (i32.const 1))
-  (global $FLAG_USE i32 (i32.const 2))
+  (global $USE_FLAG_INVALID i32 (i32.const 0))
+  (global $USE_FLAG_NON_USE i32 (i32.const 1))
+  (global $USE_FLAG_USE i32 (i32.const 2))
 
   (func $get_flag_p (param $p i32) (result i32)
     (i32.sub (get_local $p) (i32.const 9))
@@ -66,16 +66,16 @@
 
     ;;無効でなければループ
     loop $loop
-      (if (i32.ne (call $get_flag (get_local $i)) (get_global $FLAG_INVALID))
+      (if (i32.ne (call $get_flag (get_local $i)) (get_global $USE_FLAG_INVALID))
         (then
           ;;未使用
-          (if (i32.eq (call $get_flag (get_local $i)) (get_global $FLAG_NON_USE))
+          (if (i32.eq (call $get_flag (get_local $i)) (get_global $USE_FLAG_NON_USE))
             (then
               ;;サイズと等しい
               (if (i32.eq (call $get_size (get_local $i)) (get_local $size))
                 (then
                   ;;未使用→使用中
-                  (call $set_flag (get_local $i) (get_global $FLAG_USE))
+                  (call $set_flag (get_local $i) (get_global $USE_FLAG_USE))
                   (return (get_local $i))
                 )
               )
@@ -85,10 +85,10 @@
               (if (i32.ge_s (get_local $old_size) (i32.add (get_local $size) (get_global $HEAD_SIZE)))
                 (then
                   ;;==使用部分==
-                  (call $set_block (get_local $i) (get_global $FLAG_USE) (get_local $size) (get_local $prev))
+                  (call $set_block (get_local $i) (get_global $USE_FLAG_USE) (get_local $size) (get_local $prev))
                   
                   ;;==余り==
-                  (call $set_block (call $get_next (get_local $i)) (get_global $FLAG_NON_USE) (i32.sub (get_local $old_size) (i32.add (get_local $size) (get_global $HEAD_SIZE))) (get_local $i))
+                  (call $set_block (call $get_next (get_local $i)) (get_global $USE_FLAG_NON_USE) (i32.sub (get_local $old_size) (i32.add (get_local $size) (get_global $HEAD_SIZE))) (get_local $i))
                   
                   ;;==次==
                   (call $set_prev (call $get_next (call $get_next (get_local $i))) (call $get_next (get_local $i)))
@@ -106,7 +106,7 @@
     end
 
     ;;ラストに追加
-    (call $set_block (get_local $i) (get_global $FLAG_USE) (get_local $size) (get_local $prev))
+    (call $set_block (get_local $i) (get_global $USE_FLAG_USE) (get_local $size) (get_local $prev))
 
     (return (get_local $i))
   )
@@ -121,7 +121,7 @@
     (set_local $size (i32.add (call $get_size (call $get_prev (get_local $p))) (i32.add (call $get_size (get_local $p)) (get_global $HEAD_SIZE))))
 
     (call $set_size (get_local $prev) (get_local $size))
-    (if (i32.ne (call $get_flag (get_local $next)) (get_global $FLAG_INVALID))
+    (if (i32.ne (call $get_flag (get_local $next)) (get_global $USE_FLAG_INVALID))
       (then
         (call $set_prev (get_local $next) (get_local $prev))
       )
@@ -138,7 +138,7 @@
     (set_local $next_next (call $get_next (call $get_next (get_local $p))))
 
     (call $set_size (get_local $p) (get_local $size))
-    (if (i32.ne (call $get_flag (get_local $next_next)) (get_global $FLAG_INVALID))
+    (if (i32.ne (call $get_flag (get_local $next_next)) (get_global $USE_FLAG_INVALID))
       (then
         (call $set_prev (get_local $next_next) (get_local $p))
       )
@@ -149,7 +149,7 @@
     ;;先頭ポインタでないかつ前が空いているならjoin
     (if (i32.ne (get_local $p) (i32.add (get_global $START) (get_global $HEAD_SIZE)))
       (then
-        (if (i32.eq (call $get_flag (call $get_prev (get_local $p))) (get_global $FLAG_NON_USE))
+        (if (i32.eq (call $get_flag (call $get_prev (get_local $p))) (get_global $USE_FLAG_NON_USE))
           (then
             (set_local $p (call $join_prev (get_local $p)))
           )
@@ -158,19 +158,19 @@
     )
 
     ;;後ろが空いているならjoin
-    (if (i32.eq (call $get_flag (call $get_next (get_local $p))) (get_global $FLAG_NON_USE))
+    (if (i32.eq (call $get_flag (call $get_next (get_local $p))) (get_global $USE_FLAG_NON_USE))
       (then
         (call $join_next (get_local $p))
       )
     )
 
-    (if (i32.eq (call $get_flag (call $get_next (get_local $p))) (get_global $FLAG_INVALID))
+    (if (i32.eq (call $get_flag (call $get_next (get_local $p))) (get_global $USE_FLAG_INVALID))
       ;;次が無効
       (then
-        (call $set_flag (get_local $p) (get_global $FLAG_INVALID))
+        (call $set_flag (get_local $p) (get_global $USE_FLAG_INVALID))
       )
       (else
-        (call $set_flag (get_local $p) (get_global $FLAG_NON_USE))
+        (call $set_flag (get_local $p) (get_global $USE_FLAG_NON_USE))
       )
     )
   )

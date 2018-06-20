@@ -187,4 +187,21 @@
       )
     )
   )
+
+  (func $gc_inc (export "gc_inc") (param $p i32)
+    (call $set_ref_count (get_local $p) (i32.add (call $get_ref_count (get_local $p)) (i32.const 1)))
+  )
+
+  (func $gc_dec (export "gc_dec") (param $p i32)
+    (local $c i32)
+    (set_local $c (i32.sub (call $get_ref_count (get_local $p)) (i32.const 1)))
+    (if (i32.eq (get_local $c) (i32.const 0))
+     (then
+      (call $free (get_local $p))
+     )
+     (else
+      (call $set_ref_count (get_local $p) (get_local $c))
+     )
+    )
+  )
 )

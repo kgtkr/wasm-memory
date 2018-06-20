@@ -57,90 +57,91 @@ describe("memory", () => {
     const memSimBuf = memory.buffer.slice(0);
     const memSim = new DataView(memSimBuf);
 
-    //<2>[10,20]
-    expect(wasm.exports.malloc(20, 0)).toBe(12);
+    //<2>[13,20]
+    expect(wasm.exports.malloc(20)).toBe(15);
     memSim.setInt8(2, 2, true);
     memSim.setInt32(3, 20, true);
     memSim.setInt32(7, -1, true);
-    memSim.setInt32(11, 0, true);
+    memSim.setInt32(11, 1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>[10,20][10,5]
-    expect(wasm.exports.malloc(5, 1)).toBe(42);
-    memSim.setInt8(32, 2, true);
-    memSim.setInt32(33, 5, true);
-    memSim.setInt32(37, 12, true);
-    memSim.setInt32(41, 1, true);
+    //<2>[13,20][13,5]
+    expect(wasm.exports.malloc(5)).toBe(48);
+    memSim.setInt8(35, 2, true);
+    memSim.setInt32(36, 5, true);
+    memSim.setInt32(40, 15, true);
+    memSim.setInt32(44, 1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>(10,20)[10,5]
-    wasm.exports.free(12);
+    //<2>(13,20)[13,5]
+    wasm.exports.free(15);
     memSim.setInt8(2, 1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>[10,20][10,5]
-    expect(wasm.exports.malloc(20, 0)).toBe(12);
+    //<2>[13,20][13,5]
+    expect(wasm.exports.malloc(20)).toBe(15);
     memSim.setInt8(2, 2, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>(10,20)[10,5]
-    wasm.exports.free(12);
+    //<2>(13,20)[13,5]
+    wasm.exports.free(15);
     memSim.setInt8(2, 1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>[10,10](10,0)[10,5]
-    expect(wasm.exports.malloc(10, 0)).toBe(12);
+    //<2>[13,7](13,0)[13,5]
+    expect(wasm.exports.malloc(7)).toBe(15);
     memSim.setInt8(2, 2, true);
-    memSim.setInt32(3, 10, true);
+    memSim.setInt32(3, 7, true);
     memSim.setInt32(7, -1, true);
 
     memSim.setInt8(22, 1, true);
     memSim.setInt32(23, 0, true);
-    memSim.setInt32(27, 12, true);
+    memSim.setInt32(27, 15, true);
 
-    memSim.setInt32(37, 32, true);
+    memSim.setInt32(40, 35, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>(10,20)[10,5]
-    wasm.exports.free(12);
+    //<2>(13,20)[13,5]
+    wasm.exports.free(15);
     memSim.setInt8(2, 1, true);
     memSim.setInt32(3, 20, true);
     memSim.setInt32(7, -1, true);
 
-    memSim.setInt32(37, 12, true);
+    memSim.setInt32(40, 15, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>(10,20)[10,5][10,11]
-    expect(wasm.exports.malloc(11, 0)).toBe(57);
-    memSim.setInt8(47, 2, true);
-    memSim.setInt32(48, 11, true);
-    memSim.setInt32(52, 42, true);
+    //<2>(13,20)[13,5][13,11]
+    expect(wasm.exports.malloc(11)).toBe(66);
+    memSim.setInt8(53, 2, true);
+    memSim.setInt32(54, 11, true);
+    memSim.setInt32(58, 48, true);
+    memSim.setInt32(62, 1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>(10,20)[10,5]
-    wasm.exports.free(57);
-    memSim.setInt8(47, 0, true);
+    //<2>(13,20)[13,5]
+    wasm.exports.free(66);
+    memSim.setInt8(53, 0, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>(10,20)[10,5][10,11]
-    expect(wasm.exports.malloc(11, 0)).toBe(57);
-    memSim.setInt8(47, 2, true);
-    memSim.setInt32(48, 11, true);
-    memSim.setInt32(52, 42, true);
+    //<2>(13,20)[13,5][13,11]
+    expect(wasm.exports.malloc(11)).toBe(66);
+    memSim.setInt8(53, 2, true);
+    memSim.setInt32(54, 11, true);
+    memSim.setInt32(58, 48, true);
     expect(memory.buffer).abEq(memSimBuf);
 
-    //<2>(10,35)[10,11]
-    wasm.exports.free(42);
-    memSim.setInt32(3, 35, true);
+    //<2>(13,38)[13,11]
+    wasm.exports.free(48);
+    memSim.setInt32(3, 38, true);
     memSim.setInt32(7, -1, true);
 
-    memSim.setInt32(52, 12, true);
+    memSim.setInt32(58, 15, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //<2>
-    wasm.exports.free(57);
+    wasm.exports.free(66);
     memSim.setInt8(2, 0, true);
-    memSim.setInt32(3, 56, true);
+    memSim.setInt32(3, 62, true);
     expect(memory.buffer).abEq(memSimBuf);
   });
 });

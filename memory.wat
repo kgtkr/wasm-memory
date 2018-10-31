@@ -105,7 +105,7 @@
     end
 
     ;;ラストに追加
-    (call $set_block (get_local $i) (get_global $USE_FLAG_USE) (get_local $size) (get_local $prev) (i32.const 1))
+    (call $set_block (get_local $i) (get_global $USE_FLAG_USE) (get_local $size) (get_local $prev))
 
     (return (get_local $i))
   )

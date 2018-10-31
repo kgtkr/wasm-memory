@@ -1,6 +1,5 @@
 (module
   (import "resource" "memory" (memory 1))
-  (import "config" "start" (global $START i32))
   (global $INVALID i32 (i32.const -1))
   (global $HEAD_SIZE i32 (i32.const 13))
   (global $USE_FLAG_INVALID i32 (i32.const 0))
@@ -74,7 +73,7 @@
     (local $prev i32)
     (local $old_size i32)
 
-    (set_local $i (i32.add (get_global $START) (get_global $HEAD_SIZE)))
+    (set_local $i (get_global $HEAD_SIZE))
     (set_local $prev (get_global $INVALID))
 
     ;;無効でなければループ
@@ -160,7 +159,7 @@
 
   (func $free (export "free") (param $p i32)
     ;;先頭ポインタでないかつ前が空いているならjoin
-    (if (i32.ne (get_local $p) (i32.add (get_global $START) (get_global $HEAD_SIZE)))
+    (if (i32.ne (get_local $p) (get_global $HEAD_SIZE))
       (then
         (if (i32.eq (call $get_flag (call $get_prev (get_local $p))) (get_global $USE_FLAG_NON_USE))
           (then

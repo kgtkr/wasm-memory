@@ -1,20 +1,20 @@
 {
-  "name": "wasm-runtime",
+  "name": "wasm-memory",
   "version": "1.0.0",
-  "description": "[![Build Status](https://travis-ci.org/kgtkr/wasm-runtime.svg?branch=master)](https://travis-ci.org/kgtkr/wasm-runtime)",
+  "description": "[![Build Status](https://travis-ci.org/kgtkr/wasm-memory.svg?branch=master)](https://travis-ci.org/kgtkr/wasm-memory)",
   "scripts": {
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kgtkr/wasm-runtime.git"
+    "url": "git+https://github.com/kgtkr/wasm-memory.git"
   },
   "author": "kgtkr",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/kgtkr/wasm-runtime/issues"
+    "url": "https://github.com/kgtkr/wasm-memory/issues"
   },
-  "homepage": "https://github.com/kgtkr/wasm-runtime#readme",
+  "homepage": "https://github.com/kgtkr/wasm-memory#readme",
   "devDependencies": {
     "arraybuffer-equal": "^1.0.4",
     "jest": "^22.4.3"

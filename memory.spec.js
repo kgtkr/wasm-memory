@@ -44,9 +44,6 @@ describe("memory", () => {
   beforeEach(() => {
     memory = new WebAssembly.Memory({ initial: 1 });
     wasm = new WebAssembly.Instance(mod, {
-      config: {
-        start: 2
-      },
       resource: {
         memory: memory
       }

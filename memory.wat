@@ -1,25 +1,13 @@
 (module
   (import "resource" "memory" (memory 1))
   (global $INVALID i32 (i32.const -1))
-  (global $HEAD_SIZE i32 (i32.const 13))
+  (global $HEAD_SIZE i32 (i32.const 9))
   (global $USE_FLAG_INVALID i32 (i32.const 0))
   (global $USE_FLAG_NON_USE i32 (i32.const 1))
   (global $USE_FLAG_USE i32 (i32.const 2))
 
-  (func $get_ref_count_p (param $p i32) (result i32)
-    (i32.sub (get_local $p) (i32.const 4))
-  )
-
-  (func $get_ref_count (param $p i32) (result i32)
-    (i32.load (call $get_ref_count_p (get_local $p)))
-  )
-
-  (func $set_ref_count (param $p i32) (param $v i32)
-    (i32.store (call $get_ref_count_p (get_local $p)) (get_local $v))
-  )
-
   (func $get_flag_p (param $p i32) (result i32)
-    (i32.sub (get_local $p) (i32.const 13))
+    (i32.sub (get_local $p) (i32.const 9))
   )
 
   (func $get_flag (param $p i32) (result i32)
@@ -31,7 +19,7 @@
   )
 
   (func $get_size_p (param $p i32) (result i32)
-    (i32.sub (get_local $p) (i32.const 12))
+    (i32.sub (get_local $p) (i32.const 8))
   )
 
   (func $get_size (param $p i32) (result i32)
@@ -43,7 +31,7 @@
   )
 
   (func $get_prev_p (param $p i32) (result i32)
-    (i32.sub (get_local $p) (i32.const 8))
+    (i32.sub (get_local $p) (i32.const 4))
   )
 
   (func $get_prev (param $p i32) (result i32)
@@ -54,11 +42,10 @@
     (i32.store (call $get_prev_p (get_local $p)) (get_local $v))
   )
 
-  (func $set_block (param $p i32) (param $flag i32) (param $size i32) (param $prev i32) (param $ref_count i32)
+  (func $set_block (param $p i32) (param $flag i32) (param $size i32) (param $prev i32)
     (call $set_flag (get_local $p) (get_local $flag))
     (call $set_size (get_local $p) (get_local $size))
     (call $set_prev (get_local $p) (get_local $prev))
-    (call $set_ref_count (get_local $p) (get_local $ref_count))
   )
 
   (func $get_next (param $p i32) (result i32)
@@ -97,10 +84,10 @@
               (if (i32.ge_s (get_local $old_size) (i32.add (get_local $size) (get_global $HEAD_SIZE)))
                 (then
                   ;;==使用部分==
-                  (call $set_block (get_local $i) (get_global $USE_FLAG_USE) (get_local $size) (get_local $prev) (i32.const 1))
+                  (call $set_block (get_local $i) (get_global $USE_FLAG_USE) (get_local $size) (get_local $prev))
                   
                   ;;==余り==
-                  (call $set_block (call $get_next (get_local $i)) (get_global $USE_FLAG_NON_USE) (i32.sub (get_local $old_size) (i32.add (get_local $size) (get_global $HEAD_SIZE))) (get_local $i) (i32.const 0))
+                  (call $set_block (call $get_next (get_local $i)) (get_global $USE_FLAG_NON_USE) (i32.sub (get_local $old_size) (i32.add (get_local $size) (get_global $HEAD_SIZE))) (get_local $i))
                   
                   ;;==次==
                   (call $set_prev (call $get_next (call $get_next (get_local $i))) (call $get_next (get_local $i)))
@@ -184,23 +171,6 @@
       (else
         (call $set_flag (get_local $p) (get_global $USE_FLAG_NON_USE))
       )
-    )
-  )
-
-  (func $gc_inc (export "gc_inc") (param $p i32)
-    (call $set_ref_count (get_local $p) (i32.add (call $get_ref_count (get_local $p)) (i32.const 1)))
-  )
-
-  (func $gc_dec (export "gc_dec") (param $p i32)
-    (local $c i32)
-    (set_local $c (i32.sub (call $get_ref_count (get_local $p)) (i32.const 1)))
-    (if (i32.eq (get_local $c) (i32.const 0))
-     (then
-      (call $free (get_local $p))
-     )
-     (else
-      (call $set_ref_count (get_local $p) (get_local $c))
-     )
     )
   )
 )

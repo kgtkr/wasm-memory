@@ -51,9 +51,6 @@
     (i32.add (i32.add (get_local $p) (call $get_size (get_local $p))) (get_global $HEAD_SIZE))
   )
 
-  ;;メモリレイアウト
-  ;;フラグ(i8)(0:これ以降無効,1:未使用,2:使用中),サイズ(i32),前のポインタ(i32),参照カウント(i32),Body
-  ;;ポインタはBodyの先頭を指す
   (func $malloc (export "malloc") (param $size i32) (result i32)
     (local $i i32)
     (local $prev i32)
@@ -77,7 +74,7 @@
                 )
               )
 
-              ;;要求サイズ+9以上
+              ;;要求サイズ+ヘッダサイズ以上
               (set_local $old_size (call $get_size (get_local $i)))
               (if (i32.ge_s (get_local $old_size) (i32.add (get_local $size) (get_global $HEAD_SIZE)))
                 (then

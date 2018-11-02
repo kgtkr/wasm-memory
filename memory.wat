@@ -21,7 +21,7 @@
     (i32.sub (get_local $p) (i32.const 8))
   )
 
-  (func $get_size (param $p i32) (result i32)
+  (func $get_size (export "get_size") (param $p i32) (result i32)
     (i32.load (call $get_size_p (get_local $p)))
   )
 
@@ -33,7 +33,7 @@
     (i32.sub (get_local $p) (i32.const 4))
   )
 
-  (func $get_prev (param $p i32) (result i32)
+  (func $get_prev (export "get_prev") (param $p i32) (result i32)
     (i32.load (call $get_prev_p (get_local $p)))
   )
 
@@ -47,7 +47,7 @@
     (call $set_prev (get_local $p) (get_local $prev))
   )
 
-  (func $get_next (param $p i32) (result i32)
+  (func $get_next (export "get_next") (param $p i32) (result i32)
     (i32.add (i32.add (get_local $p) (call $get_size (get_local $p))) (get_global $HEAD_SIZE))
   )
 

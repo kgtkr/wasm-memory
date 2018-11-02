@@ -41,15 +41,15 @@
         (i32.add (get_local $p) (get_global $HEAD_SIZE))
     )
 
-    (func $on_flag (param $x i32) (param $flag i32) (result i32)
-        (i32.or (get_local $x) (get_local $flag))
+    (func $on_flag (param $p i32) (param $flag i32)
+        (call $set_flag (get_local $p) (i32.or (call $get_flag (get_local $p)) (get_local $flag)))
     )
 
-    (func $off_flag (param $x i32) (param $flag i32) (result i32)
-        (i32.and (get_local $x) (i32.xor (get_local $flag) (i32.const -1)))
+    (func $off_flag (param $p i32) (param $flag i32)
+        (call $set_flag (get_local $p) (i32.and (call $get_flag (get_local $p)) (i32.xor (get_local $flag) (i32.const -1))))
     )
 
-    (func $get_flag (param $x i32) (param $flag i32) (result i32)
-        (i32.and (get_local $x) (get_local $flag))
+    (func $get_flag (param $p i32) (param $flag i32) (result i32)
+        (i32.and (call $get_flag (get_local $p)) (get_local $flag))
     )
 )

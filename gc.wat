@@ -6,4 +6,30 @@
     (import "memory" "get_next" (func $memory_get_next (param i32) (result i32)))
 
     (global $HEAD_SIZE i32 (i32.const 5))
+    (global $FLAG_MARKED i32 (i32.const 0x1))
+    (global $FLAG_IS_POINTERS i32 (i32.const 0x2))
+
+    (func $get_flag_p (param $p i32) (result i32)
+        (i32.sub (get_local $p) (i32.const 5))
+    )
+
+    (func $get_flag (param $p i32) (result i32)
+        (i32.load8_s (call $get_flag_p (get_local $p)))
+    )
+
+    (func $set_flag (param $p i32) (param $v i32)
+        (i32.store8 (call $get_flag_p (get_local $p)) (get_local $v))
+    )
+
+    (func $get_count_p (param $p i32) (result i32)
+        (i32.sub (get_local $p) (i32.const 4))
+    )
+
+    (func $get_count_flag (param $p i32) (result i32)
+        (i32.load (call $get_count_p (get_local $p)))
+    )
+
+    (func $set_count_flag (param $p i32) (param $v i32)
+        (i32.store (call $get_count_p (get_local $p)) (get_local $v))
+    )
 )

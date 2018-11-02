@@ -32,4 +32,12 @@
     (func $set_count_flag (param $p i32) (param $v i32)
         (i32.store (call $get_count_p (get_local $p)) (get_local $v))
     )
+
+    (func $to_memory_pointer (param $p i32)
+        (i32.sub (get_local $p) (get_global $HEAD_SIZE))
+    )
+
+    (func $from_memory_pointer (param $p i32)
+        (i32.add (get_local $p) (get_global $HEAD_SIZE))
+    )
 )

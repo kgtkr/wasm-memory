@@ -52,4 +52,8 @@
     (func $get_bit_flag (param $p i32) (param $flag i32) (result i32)
         (i32.and (call $get_flag (get_local $p)) (get_local $flag))
     )
+
+    (func $malloc (param $size i32) (result i32)
+        (call $from_memory_pointer (call $memory_malloc (i32.add (get_local $size) (get_global $HEAD_SIZE))))
+    )
 )

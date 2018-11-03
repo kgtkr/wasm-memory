@@ -56,4 +56,8 @@
     (func $malloc (param $size i32) (result i32)
         (call $from_memory_pointer (call $memory_malloc (i32.add (get_local $size) (get_global $HEAD_SIZE))))
     )
+
+    (func $free (param $p i32)
+        (call $memory_free (call $to_memory_pointer (get_local $p)))
+    )
 )

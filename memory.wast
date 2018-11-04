@@ -1,7 +1,3 @@
-(module $resource (memory (export "memory") 1))
-
-(register "resource" $resource)
-
 (module
   (import "resource" "memory" (memory 1))
   (global $HEAD_SIZE i32 (i32.const 9))
@@ -173,5 +169,3 @@
     )
   )
 )
-
-(assert_return (invoke "malloc" (i32.const 10)) (i32.const 9))

@@ -1,3 +1,2 @@
 *.wasm
 /node_modules
-memory.json

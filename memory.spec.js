@@ -84,76 +84,46 @@ describe("memory", () => {
     expect(dataViewToBlocks(dv)).toEqual([[20, true], [5, true]]);
 
     //(9,20)[9,5]
-    wasm.exports.free(15);
+    wasm.exports.free(9);
     expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true]]);
 
     //同じサイズ
     //[9,20][9,5]
-    expect(wasm.exports.malloc(20)).toBe(15);
-    memSim.setInt8(2, 2, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    expect(wasm.exports.malloc(20)).toBe(9);
+    expect(dataViewToBlocks(dv)).toEqual([[20, true], [5, true]]);
 
     //(9,20)[9,5]
-    wasm.exports.free(15);
-    memSim.setInt8(2, 1, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    wasm.exports.free(9);
+    expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true]]);
 
     //ギリギリ入る小さいサイズ
-    //[9,7](9,0)[9,5]
-    expect(wasm.exports.malloc(7)).toBe(15);
-    memSim.setInt8(2, 2, true);
-    memSim.setInt32(3, 7, true);
-    memSim.setInt32(7, -1, true);
-
-    memSim.setInt8(22, 1, true);
-    memSim.setInt32(23, 0, true);
-    memSim.setInt32(27, 15, true);
-
-    memSim.setInt32(40, 35, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    //[9,11](9,0)[9,5]
+    expect(wasm.exports.malloc(11)).toBe(9);
+    expect(dataViewToBlocks(dv)).toEqual([[11, true], [0, false], [5, true]]);
 
     //(9,20)[9,5]
-    wasm.exports.free(15);
-    memSim.setInt8(2, 1, true);
-    memSim.setInt32(3, 20, true);
-    memSim.setInt32(7, -1, true);
-
-    memSim.setInt32(40, 15, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    wasm.exports.free(9);
+    expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true]]);
 
     //ギリギリ入らないサイズ
-    //(9,20)[9,5][9,11]
-    expect(wasm.exports.malloc(11)).toBe(66);
-    memSim.setInt8(53, 2, true);
-    memSim.setInt32(54, 11, true);
-    memSim.setInt32(58, 48, true);
-    memSim.setInt32(62, 1, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    //(9,20)[9,5][9,12]
+    expect(wasm.exports.malloc(12)).toBe(52);
+    expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true], [12, true]]);
 
     //(9,20)[9,5]
-    wasm.exports.free(66);
-    memSim.setInt8(53, 0, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    wasm.exports.free(52);
+    expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true]]);
 
-    //(9,20)[9,5][9,11]
-    expect(wasm.exports.malloc(11)).toBe(66);
-    memSim.setInt8(53, 2, true);
-    memSim.setInt32(54, 11, true);
-    memSim.setInt32(58, 48, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    //(9,20)[9,5][9,12]
+    expect(wasm.exports.malloc(12)).toBe(52);
+    expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true], [12, true]]);
 
-    //(9,38)[9,11]
-    wasm.exports.free(48);
-    memSim.setInt32(3, 38, true);
-    memSim.setInt32(7, -1, true);
-
-    memSim.setInt32(58, 15, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    //(9,34)[9,12]
+    wasm.exports.free(38);
+    expect(dataViewToBlocks(dv)).toEqual([[34, false], [12, true]]);
 
     //
-    wasm.exports.free(66);
-    memSim.setInt8(2, 0, true);
-    memSim.setInt32(3, 62, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    wasm.exports.free(52);
+    expect(dataViewToBlocks(dv)).toEqual([]);
   });
 });

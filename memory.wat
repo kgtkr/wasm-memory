@@ -9,7 +9,7 @@
     (i32.sub (get_local $p) (i32.const 9))
   )
 
-  (func $get_flag (param $p i32) (result i32)
+  (func $get_flag (export "get_flag") (param $p i32) (result i32)
     (i32.load8_s (call $get_flag_p (get_local $p)))
   )
 

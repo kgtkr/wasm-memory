@@ -31,6 +31,26 @@ expect.extend({
   },
 });
 
+function dataViewToBlocks(data) {
+  const res = [];
+  let expectPrev = 0;
+  let point = 9;
+  while (data.getInt8(point - 9, true) !== 0) {
+    const flag = data.getInt8(point - 9, true);
+    const size = data.getInt32(point - 8, true);
+    const prev = data.getInt32(point - 4, true);
+    if ((flag === 1 || flag === 2) && size >= 0 && prev === expectPrev) {
+      res.push([size, flag === 2]);
+      point = size + 9;
+      expectPrev = point;
+    } else {
+      throw new Error();
+    }
+  }
+
+  return res;
+}
+
 describe("memory", () => {
   var mod;
   var memory;
@@ -51,23 +71,19 @@ describe("memory", () => {
   });
 
   it("正常に動作するか", () => {
-    const memSimBuf = memory.buffer.slice(0);
-    const memSim = new DataView(memSimBuf);
+    const dv = new DataView(memory.buffer);
+
+    expect(dataViewToBlocks(dv)).toEqual([]);
 
     //[9,20]
-    expect(wasm.exports.malloc(20)).toBe(15);
-    memSim.setInt8(2, 2, true);
-    memSim.setInt32(3, 20, true);
-    memSim.setInt32(7, -1, true);
-    memSim.setInt32(11, 1, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    expect(wasm.exports.malloc(20)).toBe(9);
+    expect(dataViewToBlocks(dv)).toEqual([[20, true]]);
 
     //[9,20][9,5]
-    expect(wasm.exports.malloc(5)).toBe(48);
-    memSim.setInt8(35, 2, true);
-    memSim.setInt32(36, 5, true);
-    memSim.setInt32(40, 15, true);
-    memSim.setInt32(44, 1, true);
+    expect(wasm.exports.malloc(5)).toBe(38);
+    memSim.setInt8(29, 2, true);
+    memSim.setInt32(30, 5, true);
+    memSim.setInt32(40, 9, true);
     expect(memory.buffer).abEq(memSimBuf);
 
     //(9,20)[9,5]
@@ -75,6 +91,7 @@ describe("memory", () => {
     memSim.setInt8(2, 1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
+    //同じサイズ
     //[9,20][9,5]
     expect(wasm.exports.malloc(20)).toBe(15);
     memSim.setInt8(2, 2, true);
@@ -85,6 +102,7 @@ describe("memory", () => {
     memSim.setInt8(2, 1, true);
     expect(memory.buffer).abEq(memSimBuf);
 
+    //ギリギリ入る小さいサイズ
     //[9,7](9,0)[9,5]
     expect(wasm.exports.malloc(7)).toBe(15);
     memSim.setInt8(2, 2, true);
@@ -107,6 +125,7 @@ describe("memory", () => {
     memSim.setInt32(40, 15, true);
     expect(memory.buffer).abEq(memSimBuf);
 
+    //ギリギリ入らないサイズ
     //(9,20)[9,5][9,11]
     expect(wasm.exports.malloc(11)).toBe(66);
     memSim.setInt8(53, 2, true);

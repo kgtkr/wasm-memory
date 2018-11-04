@@ -64,4 +64,8 @@
     (func $inc_count (export "inc_count") (param $p i32)
         (call $set_count (get_local $p) (i32.add (call $get_count (get_local $p)) (i32.const 1)))
     )
+
+    (func $dec_count (export "dec_count") (param $p i32)
+        (call $set_count (get_local $p) (i32.add (call $get_count (get_local $p)) (i32.const -1)))
+    )
 )

@@ -153,4 +153,9 @@
       )
     end
   )
+
+  (func $run_gc
+    (call $mark)
+    (call $sweep)
+  )
 )

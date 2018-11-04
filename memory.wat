@@ -1,9 +1,9 @@
 (module
   (import "resource" "memory" (memory 1))
-  (global $HEAD_SIZE i32 (i32.const 9))
-  (global $USE_FLAG_INVALID i32 (i32.const 0))
-  (global $USE_FLAG_NON_USE i32 (i32.const 1))
-  (global $USE_FLAG_USE i32 (i32.const 2))
+  (global $HEAD_SIZE (export "HEAD_SIZE") i32 (i32.const 9))
+  (global $USE_FLAG_INVALID (export "USE_FLAG_INVALID") i32 (i32.const 0))
+  (global $USE_FLAG_NON_USE (export "USE_FLAG_NON_USE") i32 (i32.const 1))
+  (global $USE_FLAG_USE (export "USE_FLAG_USE") i32 (i32.const 2))
 
   (func $get_flag_p (param $p i32) (result i32)
     (i32.sub (get_local $p) (i32.const 9))

@@ -4,6 +4,11 @@
     (import "memory" "free" (func $memory_free (param i32)))
     (import "memory" "get_size" (func $memory_get_size (param i32) (result i32)))
     (import "memory" "get_next" (func $memory_get_next (param i32) (result i32)))
+    (import "memory" "get_flag" (func $memory_get_flag (param i32) (result i32)))
+    (import "memory" "HEAD_SIZE" (global $memory_HEAD_SIZE i32))
+    (import "memory" "USE_FLAG_INVALID" (global $memory_USE_FLAG_INVALID i32))
+    (import "memory" "USE_FLAG_NON_USE" (global $memory_USE_FLAG_NON_USE i32))
+    (import "memory" "USE_FLAG_USE" (global $memory_USE_FLAG_USE i32))
 
     (global $HEAD_SIZE i32 (i32.const 5))
     (global $FLAG_MARKED i32 (i32.const 0x1))
@@ -67,5 +72,22 @@
 
     (func $dec_count (export "dec_count") (param $p i32)
         (call $set_count (get_local $p) (i32.add (call $get_count (get_local $p)) (i32.const -1)))
+    )
+
+    (func $mark
+        (local $iter_p i32)
+        (set_local $iter_p (get_global $HEAD_SIZE))
+
+        loop $loop
+            (if (i32.const 1)
+                (then
+                    br $loop
+                )
+            )
+        end
+    )
+
+    (func $mark_rec (param $ref i32)
+    
     )
 )

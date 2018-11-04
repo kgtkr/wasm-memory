@@ -25,11 +25,11 @@
         (i32.sub (get_local $p) (i32.const 4))
     )
 
-    (func $get_count_flag (param $p i32) (result i32)
+    (func $get_count (param $p i32) (result i32)
         (i32.load (call $get_count_p (get_local $p)))
     )
 
-    (func $set_count_flag (param $p i32) (param $v i32)
+    (func $set_count (param $p i32) (param $v i32)
         (i32.store (call $get_count_p (get_local $p)) (get_local $v))
     )
 
@@ -53,11 +53,15 @@
         (i32.and (call $get_flag (get_local $p)) (get_local $flag))
     )
 
-    (func (export "malloc") $malloc (param $size i32) (result i32)
+    (func $malloc (export "malloc") (param $size i32) (result i32)
         (call $from_memory_pointer (call $memory_malloc (i32.add (get_local $size) (get_global $HEAD_SIZE))))
     )
 
     (func $free (param $p i32)
         (call $memory_free (call $to_memory_pointer (get_local $p)))
+    )
+
+    (func $inc_count (export "inc_count") (param $p i32)
+        (call $set_count (get_local $p) (i32.add (call $get_count (get_local $p)) (i32.const 1)))
     )
 )

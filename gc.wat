@@ -101,6 +101,7 @@
 
   (func $mark_rec (param $ref i32)
     (local $i i32)
+    (local $n i32)
     ;;使用中
     (if (i32.eq (call $memory_get_flag (call $to_p (get_local $ref))) (get_global $memory_USE_FLAG_USE))
       (then
@@ -112,8 +113,9 @@
             (if (call $get_bit_flag (get_local $ref) (get_global $FLAG_IS_POINTERS))
               (then
                 (set_local $i (i32.const 0))
+                (set_local $n (i32.div_s (call $get_size (get_local $ref)) (i32.const 4)))
                 loop $loop
-                  (if (i32.lt_s (get_local $i) (i32.div_s (call $get_size (get_local $ref)) (i32.const 4)))
+                  (if (i32.lt_s (get_local $i) (get_local $n))
                     (then
                       (call $mark_rec (i32.load (i32.add (get_local $ref) (i32.mul (get_local $i) (i32.const 4)))))
                       (set_local $i (i32.add (get_local $i) (i32.const 1)))

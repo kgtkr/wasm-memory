@@ -128,4 +128,29 @@
       )
     )
   )
+
+  (func $sweep
+    (local $iter_p i32)
+    (set_local $iter_p (get_global $memory_HEAD_SIZE))
+
+    ;;全てのブロックを列挙
+    loop $loop
+      (if (i32.ne (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_INVALID))
+        (then
+          (if (call $get_bit_flag (call $from_memory_pointer (get_local $iter_p)) (get_global $FLAG_MARKED))
+            (then
+              ;;マークしてるならマーク外す
+              (call $off_bit_flag (call $from_memory_pointer (get_local $iter_p)) (get_global $FLAG_MARKED))
+            )
+            (else
+              ;;マークしてないなら解放
+              (call $free (call $from_memory_pointer (get_local $iter_p)))
+            )
+          )
+          (set_local $iter_p (call $memory_get_next (get_local $iter_p)))
+          br $loop
+        )
+      )
+    end
+  )
 )

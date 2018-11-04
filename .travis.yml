@@ -7,5 +7,4 @@ before_install:
  - make
  - export PATH=$PATH:$PWD/bin/
 script:
-  - npm i
-  - npm test
+  - ./test.sh

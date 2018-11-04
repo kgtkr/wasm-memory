@@ -41,8 +41,8 @@ function dataViewToBlocks(data) {
     const prev = data.getInt32(point - 4, true);
     if ((flag === 1 || flag === 2) && size >= 0 && prev === expectPrev) {
       res.push([size, flag === 2]);
-      point = size + 9;
       expectPrev = point;
+      point += size + 9;
     } else {
       throw new Error();
     }
@@ -81,15 +81,11 @@ describe("memory", () => {
 
     //[9,20][9,5]
     expect(wasm.exports.malloc(5)).toBe(38);
-    memSim.setInt8(29, 2, true);
-    memSim.setInt32(30, 5, true);
-    memSim.setInt32(40, 9, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    expect(dataViewToBlocks(dv)).toEqual([[20, true], [5, true]]);
 
     //(9,20)[9,5]
     wasm.exports.free(15);
-    memSim.setInt8(2, 1, true);
-    expect(memory.buffer).abEq(memSimBuf);
+    expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true]]);
 
     //同じサイズ
     //[9,20][9,5]

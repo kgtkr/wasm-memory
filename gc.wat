@@ -76,11 +76,17 @@
 
     (func $mark
         (local $iter_p i32)
-        (set_local $iter_p (get_global $HEAD_SIZE))
+        (set_local $iter_p (get_global $memory_HEAD_SIZE))
 
         loop $loop
-            (if (i32.const 1)
+            (if (i32.ne (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_INVALID))
                 (then
+                    (if (i32.ne (call $get_count (call $from_memory_pointer (get_local $iter_p))) (i32.const 0))
+                        (then
+                            (call $mark_rec (call $from_memory_pointer (get_local $iter_p)))
+                        )
+                    )
+                    (set_local $iter_p (call $memory_get_next (get_local $iter_p)))
                     br $loop
                 )
             )

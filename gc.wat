@@ -18,7 +18,7 @@
   )
 
   (func $get_flag (param $ref i32) (result i32)
-    (i32.load8_s (call $get_flag_p (get_local $ref)))
+    (i32.load8_u (call $get_flag_p (get_local $ref)))
   )
 
   (func $set_flag (param $ref i32) (param $v i32)

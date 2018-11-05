@@ -10,7 +10,7 @@
   )
 
   (func $get_flag (export "get_flag") (param $p i32) (result i32)
-    (i32.load8_s (call $get_flag_p (get_local $p)))
+    (i32.load8_u (call $get_flag_p (get_local $p)))
   )
 
   (func $set_flag (param $p i32) (param $v i32)

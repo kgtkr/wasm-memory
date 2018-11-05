@@ -1,5 +1,22 @@
 const fs = require("fs");
+function dataViewToUseList(data) {
+  const res = [];
+  let point = 9;
+  while (data.getInt8(point - 9, true) !== 0) {
+    const flag = data.getInt8(point - 9, true);
+    const size = data.getInt32(point - 8, true);
+    if ((flag === 1 || flag === 2) && size >= 0) {
+      for (let i = 0; i < size + 9; i++) {
+        res.push(flag === 2);
+      }
+      point += size + 9;
+    } else {
+      throw new Error();
+    }
+  }
 
+  return res;
+}
 describe("memory", () => {
   it("正常に動作するか", () => {
     const memory = new WebAssembly.Memory({ initial: 1 });
@@ -12,7 +29,7 @@ describe("memory", () => {
       resource: {
         memory: memory
       },
-      memory: memoryWasm.exports,
+      memory: memoryWasm.exports
     });
     const dv = new DataView(memory.buffer);
 
@@ -77,43 +94,45 @@ describe("memory", () => {
 
     gcWasm.exports.run_gc();
 
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref1)))
-      .toBe(memoryWasm.exports.USE_FLAG_NON_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref2)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref3)))
-      .toBe(memoryWasm.exports.USE_FLAG_NON_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref4)))
-      .toBe(memoryWasm.exports.USE_FLAG_NON_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref5)))
-      .toBe(memoryWasm.exports.USE_FLAG_NON_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref6)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref7)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref8)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref9)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref10)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref11)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref12)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref13)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref14)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref15)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref16)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref17)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref18)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
-    expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref19)))
-      .toBe(memoryWasm.exports.USE_FLAG_USE);
+    const useList = dataViewToUseList(dv);
+
+    expect(useList[gcWasm.exports.to_p(ref1)])
+      .toBeFalsy();
+    expect(useList[gcWasm.exports.to_p(ref2)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref3)])
+      .toBeFalsy();
+    expect(useList[gcWasm.exports.to_p(ref4)])
+      .toBeFalsy();
+    expect(useList[gcWasm.exports.to_p(ref5)])
+      .toBeFalsy();
+    expect(useList[gcWasm.exports.to_p(ref6)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref7)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref8)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref9)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref10)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref11)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref12)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref13)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref14)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref15)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref16)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref17)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref18)])
+      .toBeTruthy();
+    expect(useList[gcWasm.exports.to_p(ref19)])
+      .toBeTruthy();
   });
 });

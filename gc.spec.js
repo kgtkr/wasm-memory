@@ -24,7 +24,6 @@ describe("memory", () => {
 
     // どこからも参照されない(死ぬ)
     const ref1 = gcWasm.exports.malloc(0, 1);
-    fs.writeFileSync("dump.bin", new Buffer(memory.buffer));
 
     // ref2は参照じゃないけどref3を参照もどき(ref3は死ぬ)
     const ref2 = gcWasm.exports.malloc(4, 0);

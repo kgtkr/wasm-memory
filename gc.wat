@@ -89,7 +89,7 @@
   )
 
   (func $dec_count (export "dec_count") (param $ref i32)
-    (call $set_count (get_local $ref) (i32.add (call $get_count (get_local $ref)) (i32.const -1)))
+    (call $set_count (get_local $ref) (i32.sub (call $get_count (get_local $ref)) (i32.const 1)))
   )
 
   (func $mark

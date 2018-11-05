@@ -1,7 +1,7 @@
 (module
   (import "resource" "memory" (memory 1))
   (import "memory" "malloc" (func $memory_malloc (param i32) (result i32)))
-  (import "memory" "free" (func $memory_free (param i32)))
+  (import "memory" "free" (func $memory_free (param i32) (result i32)))
   (import "memory" "get_size" (func $memory_get_size (param i32) (result i32)))
   (import "memory" "get_next" (func $memory_get_next (param i32) (result i32)))
   (import "memory" "get_flag" (func $memory_get_flag (param i32) (result i32)))
@@ -80,10 +80,6 @@
     (get_local $ref)
   )
 
-  (func $free (param $ref i32)
-    (call $memory_free (call $to_p (get_local $ref)))
-  )
-
   (func $inc_count (export "inc_count") (param $ref i32)
     (call $set_count (get_local $ref) (i32.add (call $get_count (get_local $ref)) (i32.const 1)))
   )
@@ -157,31 +153,45 @@
 
   (func $sweep
     (local $iter_p i32)
+    (local $next i32)
+    (local $new_p i32)
     (set_local $iter_p (get_global $memory_HEAD_SIZE))
 
     ;;全てのブロックを列挙
-    loop $loop
-      (if (i32.ne (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_INVALID))
-        (then
-          ;; 生きているなら
-          (if (i32.eq (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_USE))
-            (then
-              (if (call $get_bit_flag (call $to_ref (get_local $iter_p)) (get_global $FLAG_MARKED))
-                (then
-                  ;;マークしてるならマーク外す
-                  (call $off_bit_flag (call $to_ref (get_local $iter_p)) (get_global $FLAG_MARKED))
-                )
-                (else
-                  ;;マークしてないなら解放
-                  (call $free (call $to_ref (get_local $iter_p)))
+    block $block
+      loop $loop
+        (if (i32.ne (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_INVALID))
+          (then
+            (set_local $next (call $memory_get_next (get_local $iter_p)))
+            ;; 生きているなら
+            (if (i32.eq (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_USE))
+              (then
+                (if (call $get_bit_flag (call $to_ref (get_local $iter_p)) (get_global $FLAG_MARKED))
+                  (then
+                    ;;マークしてるならマーク外す
+                    (call $off_bit_flag (call $to_ref (get_local $iter_p)) (get_global $FLAG_MARKED))
+                  )
+                  (else
+                    ;;マークしてないなら解放
+                    (set_local $new_p (call $memory_free (get_local $iter_p)))
+                    ;;新しいポインタが0でなければnextにセット
+                    (if (i32.ne (get_local $new_p) (i32.const 0))
+                      (then
+                        (set_local $next (call $memory_get_next (get_local $new_p)))
+                      )
+                      (else
+                        br $block
+                      )
+                    )
+                  )
                 )
               )
             )
+            (set_local $iter_p (get_local $next))
+            br $loop
           )
-          (set_local $iter_p (call $memory_get_next (get_local $iter_p)))
-          br $loop
         )
-      )
+      end
     end
   )
 

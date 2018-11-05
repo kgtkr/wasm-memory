@@ -12,7 +12,7 @@
 
   (global $HEAD_SIZE i32 (i32.const 5))
   (global $FLAG_MARKED i32 (i32.const 0x1))
-  (global $FLAG_IS_POINTERS i32 (i32.const 0x2))
+  (global $FLAG_IS_REFS i32 (i32.const 0x2))
 
   (func $get_flag_p (param $ref i32) (result i32)
     (i32.sub (get_local $ref) (i32.const 5))
@@ -56,6 +56,10 @@
 
   (func $get_bit_flag (param $ref i32) (param $flag i32) (result i32)
     (i32.and (call $get_flag (get_local $ref)) (get_local $flag))
+  )
+
+  (func $get_is_refs (export "get_is_refs") (param $ref i32) (result i32)
+    (call $get_bit_flag (get_local $ref) (get_global $FLAG_IS_REFS))
   )
 
   (func $get_size (export "get_size") (param $ref i32) (result i32)
@@ -113,7 +117,7 @@
               (then
                 (call $on_bit_flag (get_local $ref) (get_global $FLAG_MARKED))
                 ;;ポインタセットなら再帰的にマーク
-                (if (call $get_bit_flag (get_local $ref) (get_global $FLAG_IS_POINTERS))
+                (if (call $get_bit_flag (get_local $ref) (get_global $FLAG_IS_REFS))
                   (then
                     (set_local $i (i32.const 0))
                     (set_local $n (i32.div_s (call $get_size (get_local $ref)) (i32.const 4)))

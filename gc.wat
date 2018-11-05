@@ -163,14 +163,19 @@
     loop $loop
       (if (i32.ne (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_INVALID))
         (then
-          (if (call $get_bit_flag (call $to_ref (get_local $iter_p)) (get_global $FLAG_MARKED))
+          ;; 生きているなら
+          (if (i32.eq (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_USE))
             (then
-              ;;マークしてるならマーク外す
-              (call $off_bit_flag (call $to_ref (get_local $iter_p)) (get_global $FLAG_MARKED))
-            )
-            (else
-              ;;マークしてないなら解放
-              (call $free (call $to_ref (get_local $iter_p)))
+              (if (call $get_bit_flag (call $to_ref (get_local $iter_p)) (get_global $FLAG_MARKED))
+                (then
+                  ;;マークしてるならマーク外す
+                  (call $off_bit_flag (call $to_ref (get_local $iter_p)) (get_global $FLAG_MARKED))
+                )
+                (else
+                  ;;マークしてないなら解放
+                  (call $free (call $to_ref (get_local $iter_p)))
+                )
+              )
             )
           )
           (set_local $iter_p (call $memory_get_next (get_local $iter_p)))

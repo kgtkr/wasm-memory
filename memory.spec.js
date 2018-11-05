@@ -42,7 +42,7 @@ describe("memory", () => {
     expect(dataViewToBlocks(dv)).toEqual([[20, true], [5, true]]);
 
     //(9,20)[9,5]
-    wasm.exports.free(9);
+    expect(wasm.exports.free(9)).toBe(9);
     expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true]]);
 
     //同じサイズ
@@ -51,7 +51,7 @@ describe("memory", () => {
     expect(dataViewToBlocks(dv)).toEqual([[20, true], [5, true]]);
 
     //(9,20)[9,5]
-    wasm.exports.free(9);
+    expect(wasm.exports.free(9)).toBe(9);
     expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true]]);
 
     //ギリギリ入る小さいサイズ
@@ -60,7 +60,7 @@ describe("memory", () => {
     expect(dataViewToBlocks(dv)).toEqual([[11, true], [0, false], [5, true]]);
 
     //(9,20)[9,5]
-    wasm.exports.free(9);
+    expect(wasm.exports.free(9)).toBe(9);
     expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true]]);
 
     //ギリギリ入らないサイズ
@@ -69,7 +69,7 @@ describe("memory", () => {
     expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true], [12, true]]);
 
     //(9,20)[9,5]
-    wasm.exports.free(52);
+    expect(wasm.exports.free(52)).toBe(0);
     expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true]]);
 
     //(9,20)[9,5][9,12]
@@ -77,11 +77,11 @@ describe("memory", () => {
     expect(dataViewToBlocks(dv)).toEqual([[20, false], [5, true], [12, true]]);
 
     //(9,34)[9,12]
-    wasm.exports.free(38);
+    expect(wasm.exports.free(38)).toBe(9);
     expect(dataViewToBlocks(dv)).toEqual([[34, false], [12, true]]);
 
     //
-    wasm.exports.free(52);
+    expect(wasm.exports.free(52)).toBe(0);
     expect(dataViewToBlocks(dv)).toEqual([]);
   });
 });

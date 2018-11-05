@@ -98,7 +98,7 @@
 
     ;;全てのブロックを列挙
     loop $loop
-      (if (i32.ne (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_INVALID))
+      (if (i32.eq (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_USE))
         (then
           ;;ルートセットに登録されてるなら
           (if (i32.ne (call $get_count (call $to_ref (get_local $iter_p))) (i32.const 0))

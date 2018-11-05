@@ -66,8 +66,19 @@
     (i32.sub (call $memory_get_size (call $to_p (get_local $ref))) (get_global $HEAD_SIZE))
   )
 
-  (func $malloc (export "malloc") (param $size i32) (result i32)
-    (call $to_ref (call $memory_malloc (i32.add (get_local $size) (get_global $HEAD_SIZE))))
+  (func $malloc (export "malloc") (param $size i32) (param $is_refs i32) (result i32)
+    (local $ref i32)
+    (set_local $ref (call $to_ref (call $memory_malloc (i32.add (get_local $size) (get_global $HEAD_SIZE)))))
+    (call $set_count (get_local $ref) (i32.const 0))
+    (if (get_local $is_refs)
+      (then
+        (call $on_bit_flag (get_local $ref) (get_global $FLAG_IS_REFS))
+      )
+      (else
+        (call $off_bit_flag (get_local $ref) (get_global $FLAG_IS_REFS))
+      )
+    )
+    (get_local $ref)
   )
 
   (func $free (param $ref i32)

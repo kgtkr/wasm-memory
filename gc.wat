@@ -100,6 +100,7 @@
     loop $loop
       (if (i32.ne (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_INVALID))
         (then
+          ;; 生きているなら
           (if (i32.eq (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_USE))
             (then
               ;;ルートセットに登録されてるなら

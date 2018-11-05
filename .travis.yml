@@ -7,7 +7,5 @@ before_install:
  - make
  - export PATH=$PATH:$PWD/bin/
 script:
-  - wat2wasm memory.wat
-  - wat2wasm gc.wat
   - npm i
   - npm test

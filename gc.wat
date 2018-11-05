@@ -98,15 +98,19 @@
 
     ;;全てのブロックを列挙
     loop $loop
-      (if (i32.eq (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_USE))
+      (if (i32.ne (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_INVALID))
         (then
-          ;;ルートセットに登録されてるなら
-          (if (i32.ne (call $get_count (call $to_ref (get_local $iter_p))) (i32.const 0))
+          (if (i32.eq (call $memory_get_flag (get_local $iter_p)) (get_global $memory_USE_FLAG_USE))
             (then
-              (call $mark_rec (call $to_ref (get_local $iter_p)))
+              ;;ルートセットに登録されてるなら
+              (if (i32.ne (call $get_count (call $to_ref (get_local $iter_p))) (i32.const 0))
+                (then
+                  (call $mark_rec (call $to_ref (get_local $iter_p)))
+                )
+              )
+              (set_local $iter_p (call $memory_get_next (get_local $iter_p)))
             )
           )
-          (set_local $iter_p (call $memory_get_next (get_local $iter_p)))
           br $loop
         )
       )

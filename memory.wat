@@ -139,12 +139,16 @@
     )
   )
 
-  (func $free (export "free") (param $p i32)
+  ;;このブロックの新しいポインタを返す
+  (func $free (export "free") (param $p i32) (result i32)
+    (local $new_p i32)
+    (set_local $new_p (get_local $p))
     ;;先頭ポインタでないかつ前が空いているならjoin
     (if (i32.ne (get_local $p) (get_global $HEAD_SIZE))
       (then
         (if (i32.eq (call $get_flag (call $get_prev (get_local $p))) (get_global $USE_FLAG_NON_USE))
           (then
+            (set_local $new_p (call $get_prev (get_local $p)))
             (set_local $p (call $join_prev (get_local $p)))
           )
         )
@@ -161,11 +165,13 @@
     (if (i32.eq (call $get_flag (call $get_next (get_local $p))) (get_global $USE_FLAG_INVALID))
       ;;次が無効
       (then
+        (set_local $new_p (i32.const 0))
         (call $set_flag (get_local $p) (get_global $USE_FLAG_INVALID))
       )
       (else
         (call $set_flag (get_local $p) (get_global $USE_FLAG_NON_USE))
       )
     )
+    (get_local $new_p)
   )
 )

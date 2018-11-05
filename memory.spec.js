@@ -21,24 +21,14 @@ function dataViewToBlocks(data) {
 }
 
 describe("memory", () => {
-  var mod;
-  var memory;
-  var wasm;
-  beforeAll(() => {
-    const buf = fs.readFileSync("memory.wasm");
-    mod = new WebAssembly.Module(buf);
-  });
+  it("正常に動作するか", () => {
 
-  beforeEach(() => {
-    memory = new WebAssembly.Memory({ initial: 1 });
-    wasm = new WebAssembly.Instance(mod, {
+    const memory = new WebAssembly.Memory({ initial: 1 });
+    const wasm = new WebAssembly.Instance(new WebAssembly.Module(fs.readFileSync("memory.wasm")), {
       resource: {
         memory: memory
       }
     });
-  });
-
-  it("正常に動作するか", () => {
     const dv = new DataView(memory.buffer);
 
     expect(dataViewToBlocks(dv)).toEqual([]);

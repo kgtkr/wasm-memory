@@ -88,7 +88,7 @@ describe("memory", () => {
     expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref5)))
       .toBe(memoryWasm.exports.USE_FLAG_NON_USE);
     expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref6)))
-      .toBe(memoryWasm.exports.USE_FLAG_NON_USE);
+      .toBe(memoryWasm.exports.USE_FLAG_USE);
     expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref7)))
       .toBe(memoryWasm.exports.USE_FLAG_USE);
     expect(memoryWasm.exports.get_flag(gcWasm.exports.to_p(ref8)))

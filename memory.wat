@@ -99,8 +99,9 @@
       )
     end
 
-    ;;ラストに追加
+    ;;ラストに追加し、次のブロックを無効にする
     (call $set_block (get_local $i) (get_global $USE_FLAG_USE) (get_local $size) (get_local $prev))
+    (call $set_flag (call $get_next (get_local $i)) (get_global $USE_FLAG_INVALID))
 
     (return (get_local $i))
   )

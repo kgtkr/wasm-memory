@@ -16,8 +16,15 @@ describe("memory", () => {
     });
     const dv = new DataView(memory.buffer);
 
+    const a = gcWasm.exports.malloc(4, 1);
+    const b = gcWasm.exports.malloc(4, 1);
+    dv.setInt32(a, b, true);
+    dv.setInt32(b, a, true);
+    gcWasm.exports.run_gc();
+
     // どこからも参照されない(死ぬ)
     const ref1 = gcWasm.exports.malloc(0, 1);
+    fs.writeFileSync("dump.bin", new Buffer(memory.buffer));
 
     // ref2は参照じゃないけどref3を参照もどき(ref3は死ぬ)
     const ref2 = gcWasm.exports.malloc(4, 0);

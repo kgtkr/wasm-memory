@@ -9,7 +9,6 @@
   (import "memory" "USE_FLAG_INVALID" (global $memory_USE_FLAG_INVALID i32))
   (import "memory" "USE_FLAG_NON_USE" (global $memory_USE_FLAG_NON_USE i32))
   (import "memory" "USE_FLAG_USE" (global $memory_USE_FLAG_USE i32))
-
   (global $HEAD_SIZE i32 (i32.const 5))
   (global $FLAG_MARKED i32 (i32.const 0x1))
   (global $FLAG_IS_REFS i32 (i32.const 0x2))
@@ -72,10 +71,10 @@
     (call $set_count (get_local $ref) (i32.const 0))
     (if (get_local $is_refs)
       (then
-        (call $on_bit_flag (get_local $ref) (get_global $FLAG_IS_REFS))
+        (call $set_flag (get_local $ref) (get_global $FLAG_IS_REFS))
       )
       (else
-        (call $off_bit_flag (get_local $ref) (get_global $FLAG_IS_REFS))
+        (call $set_flag (get_local $ref) (i32.const 0))
       )
     )
     (get_local $ref)

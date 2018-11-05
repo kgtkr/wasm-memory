@@ -109,9 +109,9 @@
                   (call $mark_rec (call $to_ref (get_local $iter_p)))
                 )
               )
-              (set_local $iter_p (call $memory_get_next (get_local $iter_p)))
             )
           )
+          (set_local $iter_p (call $memory_get_next (get_local $iter_p)))
           br $loop
         )
       )

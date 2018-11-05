@@ -16,7 +16,6 @@
   },
   "homepage": "https://github.com/kgtkr/wasm-memory#readme",
   "devDependencies": {
-    "arraybuffer-equal": "^1.0.4",
     "jest": "^22.4.3"
   }
 }

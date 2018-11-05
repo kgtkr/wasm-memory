@@ -30,7 +30,7 @@
     (i32.sub (get_local $ref) (i32.const 4))
   )
 
-  (func $get_count (param $ref i32) (result i32)
+  (func $get_count (export "get_count") (param $ref i32) (result i32)
     (i32.load (call $get_count_p (get_local $ref)))
   )
 
@@ -38,11 +38,11 @@
     (i32.store (call $get_count_p (get_local $ref)) (get_local $v))
   )
 
-  (func $to_p (param $ref i32) (result i32)
+  (func $to_p (export "to_p") (param $ref i32) (result i32)
     (i32.sub (get_local $ref) (get_global $HEAD_SIZE))
   )
 
-  (func $to_ref (param $p i32) (result i32)
+  (func $to_ref (export "to_ref") (param $p i32) (result i32)
     (i32.add (get_local $p) (get_global $HEAD_SIZE))
   )
 
@@ -58,7 +58,7 @@
     (i32.and (call $get_flag (get_local $ref)) (get_local $flag))
   )
 
-  (func $get_size (param $ref i32) (result i32)
+  (func $get_size (export "get_size") (param $ref i32) (result i32)
     (i32.sub (call $memory_get_size (call $to_p (get_local $ref))) (get_global $HEAD_SIZE))
   )
 
@@ -161,7 +161,7 @@
     end
   )
 
-  (func $run_gc
+  (func $run_gc (export "run_gc")
     (call $mark)
     (call $sweep)
   )

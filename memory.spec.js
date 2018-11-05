@@ -1,4 +1,3 @@
-const child_process = require('child_process');
 const fs = require("fs");
 
 function dataViewToBlocks(data) {
@@ -26,7 +25,6 @@ describe("memory", () => {
   var memory;
   var wasm;
   beforeAll(() => {
-    child_process.execSync("wat2wasm memory.wat");
     const buf = fs.readFileSync("memory.wasm");
     mod = new WebAssembly.Module(buf);
   });

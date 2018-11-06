@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "[![Build Status](https://travis-ci.org/kgtkr/wasm-memory.svg?branch=master)](https://travis-ci.org/kgtkr/wasm-memory)",
   "scripts": {
-    "test": "wat2wasm memory.wat&&wat2wasm gc.wat&&jest"
+    "test": "npm run build&&jest",
+    "build": "wat2wasm memory.wat&&wat2wasm gc.wat"
   },
   "repository": {
     "type": "git",
